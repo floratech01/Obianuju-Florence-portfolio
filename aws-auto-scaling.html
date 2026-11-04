@@ -1,0 +1,800 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description" content="AWS scalable web hosting project featuring EC2, Auto Scaling, load balancing, HAProxy, DNS, and HTTPS.">
+
+  <title>Scalable Web Hosting with AWS | Florence's Portfolio</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            accent: '#f97316'
+          }
+        }
+      }
+    };
+  </script>
+
+  <script>
+    try {
+      const savedTheme = localStorage.getItem('theme');
+
+      if (
+        savedTheme === 'dark' ||
+        (!savedTheme &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (error) {
+      // Use the default theme if local storage is unavailable.
+    }
+  </script>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .project-banner {
+      width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+      background: #f4f4f5;
+      border-radius: 16px;
+    }
+
+    .dark .project-banner {
+      background: #18181b;
+    }
+
+    .evidence-image {
+      display: block;
+      width: 100%;
+      height: 280px;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 1px solid #e4e4e7;
+      background: #f4f4f5;
+    }
+
+    .dark .evidence-image {
+      border-color: #3f3f46;
+      background: #18181b;
+    }
+
+    .architecture-card {
+      min-width: 160px;
+      padding: 18px;
+      border: 1px solid #3f3f46;
+      border-radius: 12px;
+      text-align: center;
+      color: #f4f4f5;
+      background: #18181b;
+    }
+
+    .architecture-arrow {
+      color: #f97316;
+      font-size: 26px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body class="bg-white text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+
+  <!-- NAVIGATION -->
+  <header class="border-b border-zinc-200 dark:border-zinc-800">
+    <nav class="max-w-6xl mx-auto px-6 py-5 flex flex-wrap justify-between items-center gap-4">
+
+      <a href="index.html"
+         class="font-bold text-xl text-zinc-900 dark:text-white">
+        Florence<span class="text-orange-500">.</span>
+      </a>
+
+      <div class="flex items-center gap-5 text-sm">
+        <a href="index.html" class="hover:text-orange-500">Home</a>
+        <a href="projects.html" class="hover:text-orange-500">Projects</a>
+
+        <button
+          id="theme-toggle"
+          type="button"
+          class="border border-zinc-300 dark:border-zinc-700 rounded-full px-4 py-2"
+          aria-label="Toggle dark mode">
+          Toggle theme
+        </button>
+      </div>
+
+    </nav>
+  </header>
+
+
+  <main class="max-w-6xl mx-auto px-6 py-10 md:py-16">
+
+    <!-- INTRODUCTION -->
+    <section class="max-w-4xl mb-12">
+
+      <a href="projects.html"
+         class="text-sm text-orange-500 hover:underline">
+        ← Back to all projects
+      </a>
+
+      <p class="text-sm uppercase tracking-widest text-orange-500 font-semibold mt-8 mb-4">
+        Cloud Infrastructure &amp; DevOps
+      </p>
+
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-zinc-950 dark:text-white leading-tight">
+        Scalable Web Hosting with AWS and HAProxy
+      </h1>
+
+      <p class="text-lg text-zinc-600 dark:text-zinc-400 mt-6 leading-relaxed">
+        A cloud infrastructure project focused on web hosting with Amazon EC2,
+        launch templates, Auto Scaling Groups, load balancing, HAProxy,
+        DNS configuration, and TLS/SSL.
+      </p>
+
+      <div class="flex flex-wrap gap-2 mt-6">
+
+        <span class="rounded-full px-3 py-1 text-sm bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300">
+          AWS
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          EC2
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          Auto Scaling
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          Load Balancing
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          HAProxy
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          TLS/SSL
+        </span>
+
+      </div>
+    </section>
+
+
+    <!-- PROJECT FRONT BANNER -->
+    <section class="mb-16">
+
+      <img
+        src="images/aws-website-live.png"
+        alt="Website hosted as part of the AWS web hosting project"
+        class="project-banner"
+        fetchpriority="high"
+      >
+
+      <p class="text-sm text-zinc-500 mt-3">
+        Web hosting project — website preview.
+      </p>
+
+    </section>
+
+
+    <!-- PROJECT SUMMARY -->
+    <section class="grid md:grid-cols-3 gap-5 mb-16">
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+        <p class="text-sm text-zinc-500 mb-2">Compute</p>
+        <h2 class="font-semibold text-lg">Amazon EC2</h2>
+        <p class="text-sm text-zinc-500 mt-2">
+          Virtual servers for hosting web workloads.
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+        <p class="text-sm text-zinc-500 mb-2">Scalability</p>
+        <h2 class="font-semibold text-lg">Auto Scaling</h2>
+        <p class="text-sm text-zinc-500 mt-2">
+          Reusable server configuration and managed instance capacity.
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+        <p class="text-sm text-zinc-500 mb-2">Traffic management</p>
+        <h2 class="font-semibold text-lg">Load balancing and proxying</h2>
+        <p class="text-sm text-zinc-500 mt-2">
+          Routing web requests through the configured infrastructure.
+        </p>
+      </div>
+
+    </section>
+
+
+    <!-- PROJECT OVERVIEW -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-5">
+        Project overview
+      </h2>
+
+      <div class="max-w-4xl space-y-4 leading-relaxed text-zinc-600 dark:text-zinc-400">
+
+        <p>
+          This project explored hosting a website on AWS using EC2 instances
+          and supporting infrastructure. The server configuration was used
+          as the basis for a reusable Amazon Machine Image (AMI).
+        </p>
+
+        <p>
+          An EC2 launch template and Auto Scaling Group provide a repeatable
+          way to launch and manage instances. When associated with a suitable
+          load balancer and target group, the environment can distribute
+          incoming requests among healthy registered targets.
+        </p>
+
+        <p>
+          The project also covered HAProxy, DNS, HTTPS certificates, and
+          infrastructure notifications. The precise roles of these components
+          depend on how they were configured in the deployed environment.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- ARCHITECTURE -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-3">
+        Architecture
+      </h2>
+
+      <p class="text-zinc-600 dark:text-zinc-400 mb-8 max-w-3xl">
+        The diagram below illustrates the main infrastructure concepts
+        involved in a scalable web hosting environment.
+      </p>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-950 p-6 md:p-8 overflow-x-auto">
+
+        <div class="flex flex-col items-center gap-3 min-w-[250px]">
+
+          <div class="architecture-card w-full max-w-md">
+            <p class="text-orange-400 text-xs uppercase tracking-wider mb-2">
+              Entry point
+            </p>
+            <h3 class="font-bold text-lg">User / Web Browser</h3>
+            <p class="text-sm text-zinc-400 mt-2">
+              Website requests
+            </p>
+          </div>
+
+          <div class="architecture-arrow">↓</div>
+
+          <div class="architecture-card w-full max-w-md">
+            <p class="text-orange-400 text-xs uppercase tracking-wider mb-2">
+              Name resolution
+            </p>
+            <h3 class="font-bold text-lg">DNS</h3>
+            <p class="text-sm text-zinc-400 mt-2">
+              Resolves the website hostname
+            </p>
+          </div>
+
+          <div class="architecture-arrow">↓</div>
+
+          <div class="architecture-card w-full max-w-md border-orange-500">
+            <p class="text-orange-400 text-xs uppercase tracking-wider mb-2">
+              Traffic distribution
+            </p>
+            <h3 class="font-bold text-lg">Elastic Load Balancer</h3>
+            <p class="text-sm text-zinc-400 mt-2">
+              Routes requests to registered targets
+            </p>
+          </div>
+
+          <div class="architecture-arrow">↓</div>
+
+          <div class="architecture-card w-full max-w-md">
+            <p class="text-orange-400 text-xs uppercase tracking-wider mb-2">
+              Compute tier
+            </p>
+            <h3 class="font-bold text-lg">EC2 Auto Scaling Group</h3>
+            <p class="text-sm text-zinc-400 mt-2">
+              Instances launched from a launch template
+            </p>
+          </div>
+
+          <div class="architecture-arrow">↓</div>
+
+          <div class="architecture-card w-full max-w-md">
+            <p class="text-orange-400 text-xs uppercase tracking-wider mb-2">
+              Web server / proxy
+            </p>
+            <h3 class="font-bold text-lg">HAProxy / Nginx</h3>
+            <p class="text-sm text-zinc-400 mt-2">
+              Include the components used in the actual deployment
+            </p>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3 w-full max-w-2xl mt-5">
+
+            <div class="architecture-card">
+              <h3 class="font-semibold">Amazon SNS</h3>
+              <p class="text-sm text-zinc-400 mt-2">
+                Infrastructure notifications, where configured
+              </p>
+            </div>
+
+            <div class="architecture-card">
+              <h3 class="font-semibold">TLS/SSL</h3>
+              <p class="text-sm text-zinc-400 mt-2">
+                HTTPS at the configured termination point
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- IMPLEMENTATION -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-6">
+        Implementation
+      </h2>
+
+      <div class="space-y-8">
+
+        <div class="flex gap-4">
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            1
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Provision EC2 and prepare the web server
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Launch an EC2 instance, install and configure the required web
+              server, and verify that the website responds as expected.
+              Configure security group rules for the required traffic.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="flex gap-4">
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            2
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Create an AMI and launch template
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Prepare a reusable AMI and configure a launch template with the
+              required image, instance settings, security groups, and launch
+              parameters.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="flex gap-4">
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            3
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Configure the Auto Scaling Group
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Use the launch template to define the instances managed by the
+              Auto Scaling Group. Configure capacity limits and associate the
+              appropriate load-balancer target group where applicable.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="flex gap-4">
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            4
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Configure load balancing and HAProxy
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Configure the load balancer, target health checks, and HAProxy
+              or Nginx according to the intended request-routing design.
+              Verify that requests reach the expected web server.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="flex gap-4">
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            5
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Configure DNS and HTTPS
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Configure DNS to direct the website hostname to the intended
+              endpoint. Configure the appropriate TLS certificate and verify
+              the hostname, certificate validity, and HTTPS response.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="flex gap-4">
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            6
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Configure notifications
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Where configured, use Amazon SNS to deliver relevant
+              infrastructure notifications to subscribed endpoints. Confirm
+              actual message delivery through testing.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- SCREENSHOTS AND EVIDENCE -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-3">
+        Screenshots and evidence
+      </h2>
+
+      <p class="text-zinc-600 dark:text-zinc-400 mb-8">
+        Screenshots from the AWS hosting project, covering the live website,
+        EC2 instances, Auto Scaling, network configuration, HAProxy, and HTTPS.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6">
+
+
+        <!-- IMAGE 1: LIVE WEBSITE -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/aws-website-live.png"
+            alt="Website hosted as part of the AWS web hosting project"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+            <h3 class="font-semibold">Live website</h3>
+            <p class="text-sm text-zinc-500 mt-1">
+              Browser view of the hosted website.
+            </p>
+          </figcaption>
+
+        </figure>
+
+
+        <!-- IMAGE 2: AUTO SCALING -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/aws-auto-scaling.png"
+            alt="AWS Auto Scaling Group configuration"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+            <h3 class="font-semibold">AWS Auto Scaling</h3>
+            <p class="text-sm text-zinc-500 mt-1">
+              Auto Scaling Group configuration and status.
+            </p>
+          </figcaption>
+
+        </figure>
+
+
+        <!-- IMAGE 3: EC2 INSTANCES -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/aws-ec2-instances.png"
+            alt="Amazon EC2 instances"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+            <h3 class="font-semibold">EC2 instances</h3>
+            <p class="text-sm text-zinc-500 mt-1">
+              Instances associated with the hosting environment.
+            </p>
+          </figcaption>
+
+        </figure>
+
+
+        <!-- IMAGE 4: SUBNETS -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/aws-subnets.png"
+            alt="AWS subnet configuration"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+            <h3 class="font-semibold">AWS network configuration</h3>
+            <p class="text-sm text-zinc-500 mt-1">
+              VPC subnet configuration for the cloud environment.
+            </p>
+          </figcaption>
+
+        </figure>
+
+
+        <!-- IMAGE 5: HAPROXY -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/aws-haproxy.png"
+            alt="HAProxy configuration"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+            <h3 class="font-semibold">HAProxy configuration</h3>
+            <p class="text-sm text-zinc-500 mt-1">
+              Reverse proxy configuration used in the hosting setup.
+            </p>
+          </figcaption>
+
+        </figure>
+
+
+        <!-- IMAGE 6: HTTPS CERTIFICATE -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/aws-https-certificate.png"
+            alt="HTTPS certificate for the hosted website"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+            <h3 class="font-semibold">HTTPS and TLS certificate</h3>
+            <p class="text-sm text-zinc-500 mt-1">
+              Certificate evidence for secure website access.
+            </p>
+          </figcaption>
+
+        </figure>
+
+
+      </div>
+    </section>
+
+
+    <!-- TESTING AND VALIDATION -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-5">
+        Testing and validation
+      </h2>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 md:p-8">
+
+        <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          Validation for this type of environment includes checking that
+          instances launch correctly, the website responds, load-balancer
+          targets become healthy, and HTTPS works through the intended endpoint.
+        </p>
+
+        <ul class="list-disc pl-5 mt-5 space-y-3 text-zinc-600 dark:text-zinc-400">
+
+          <li>
+            Check that the website responds from the intended endpoint.
+          </li>
+
+          <li>
+            Verify EC2 instance status and load-balancer target health.
+          </li>
+
+          <li>
+            If tested, verify that the Auto Scaling Group replaces a
+            deliberately terminated test instance.
+          </li>
+
+          <li>
+            Confirm DNS resolution and HTTPS certificate validity.
+          </li>
+
+          <li>
+            If SNS was configured, test notification delivery.
+          </li>
+
+        </ul>
+
+        <p class="text-sm text-zinc-500 mt-5">
+          Document only the tests you actually performed and the results
+          you observed.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- SECURITY CONSIDERATIONS -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-5">
+        Security considerations
+      </h2>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+
+        <ul class="list-disc pl-5 space-y-3 text-zinc-600 dark:text-zinc-400">
+
+          <li>
+            Restrict security group rules to the ports and sources required.
+          </li>
+
+          <li>
+            Use valid TLS certificates for public HTTPS endpoints.
+          </li>
+
+          <li>
+            Protect credentials, access keys, passwords, and private keys.
+          </li>
+
+          <li>
+            Apply appropriate IAM permissions to AWS resources.
+          </li>
+
+          <li>
+            Review screenshots before publication to remove sensitive
+            information.
+          </li>
+
+        </ul>
+
+      </div>
+    </section>
+
+
+    <!-- KEY LEARNINGS -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-5">
+        Key learnings
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-5">
+
+        <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+
+          <h3 class="font-semibold mb-3">
+            Infrastructure
+          </h3>
+
+          <ul class="list-disc pl-5 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+            <li>EC2 instances and reusable AMIs</li>
+            <li>Launch templates and Auto Scaling Groups</li>
+            <li>Load balancing and target health</li>
+            <li>VPC subnet concepts</li>
+          </ul>
+
+        </div>
+
+        <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+
+          <h3 class="font-semibold mb-3">
+            Web hosting and security
+          </h3>
+
+          <ul class="list-disc pl-5 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+            <li>HAProxy and reverse proxy concepts</li>
+            <li>DNS configuration</li>
+            <li>TLS/SSL certificate management</li>
+            <li>Infrastructure notification concepts</li>
+          </ul>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- PROJECT NAVIGATION -->
+    <section class="border-t border-zinc-200 dark:border-zinc-800 pt-8 flex flex-wrap justify-between gap-4">
+
+      <a href="datadog-monitoring.html"
+         class="text-orange-500 hover:underline">
+        ← Previous: Datadog Monitoring
+      </a>
+
+      <a href="projects.html"
+         class="text-orange-500 hover:underline">
+        All Projects →
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="border-t border-zinc-200 dark:border-zinc-800 mt-12">
+
+    <div class="max-w-6xl mx-auto px-6 py-6 text-sm text-zinc-500">
+      © 2026 Florence. Cloud, DevOps, and technology projects.
+    </div>
+
+  </footer>
+
+
+  <!-- THEME TOGGLE -->
+  <script>
+    const themeButton = document.getElementById('theme-toggle');
+
+    themeButton.addEventListener('click', () => {
+      const isDark =
+        document.documentElement.classList.toggle('dark');
+
+      try {
+        localStorage.setItem(
+          'theme',
+          isDark ? 'dark' : 'light'
+        );
+      } catch (error) {
+        // Theme still changes for the current page.
+      }
+    });
+  </script>
+
+</body>
+</html>

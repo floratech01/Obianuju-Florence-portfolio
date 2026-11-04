@@ -1,0 +1,679 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description" content="VM monitoring and alerting project using Datadog, Linux metrics, dashboards, and threshold-based alerts.">
+
+  <title>VM Monitoring with Datadog | Portfolio</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            accent: '#f97316'
+          }
+        }
+      }
+    };
+  </script>
+
+  <script>
+    try {
+      if (
+        localStorage.getItem('theme') === 'dark' ||
+        (
+          !localStorage.getItem('theme') &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+        )
+      ) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (error) {
+      // Continue using the default theme if storage is unavailable.
+    }
+  </script>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .architecture-card {
+      border: 1px solid #3f3f46;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      background: #18181b;
+      color: #f4f4f5;
+      min-width: 150px;
+    }
+
+    .architecture-arrow {
+      color: #f97316;
+      font-size: 28px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .evidence-image {
+      display: block;
+      width: 100%;
+      height: 280px;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 1px solid #e4e4e7;
+      background: #f4f4f5;
+    }
+
+    .dark .evidence-image {
+      border-color: #3f3f46;
+      background: #18181b;
+    }
+  </style>
+</head>
+
+<body class="bg-white text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+
+  <!-- NAVIGATION -->
+  <header class="border-b border-zinc-200 dark:border-zinc-800">
+    <nav class="max-w-6xl mx-auto px-6 py-5 flex flex-wrap justify-between items-center gap-4">
+
+      <a href="index.html"
+         class="font-bold text-xl text-zinc-900 dark:text-white">
+        My Portfolio<span class="text-orange-500">.</span>
+      </a>
+
+      <div class="flex items-center gap-5 text-sm">
+        <a href="index.html" class="hover:text-orange-500">Home</a>
+
+        <a href="projects.html" class="hover:text-orange-500">Projects</a>
+
+        <button
+          id="theme-toggle"
+          class="border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2"
+          type="button"
+          aria-label="Toggle dark mode">
+          Toggle theme
+        </button>
+      </div>
+
+    </nav>
+  </header>
+
+
+  <main class="max-w-6xl mx-auto px-6 py-12 md:py-16">
+
+    <!-- INTRODUCTION -->
+    <section class="max-w-3xl mb-12">
+
+      <a href="projects.html"
+         class="text-sm text-orange-500 hover:underline">
+        ← Back to projects
+      </a>
+
+      <p class="text-sm uppercase tracking-widest text-orange-500 font-semibold mt-8 mb-4">
+        Monitoring &amp; Observability
+      </p>
+
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-zinc-950 dark:text-white leading-tight">
+        VM Monitoring and Alerting with Datadog
+      </h1>
+
+      <p class="text-lg text-zinc-600 dark:text-zinc-400 mt-6 leading-relaxed">
+        A virtual machine monitoring project focused on collecting system
+        metrics, visualizing resource utilization, and detecting performance
+        conditions through threshold-based alerts.
+      </p>
+
+      <div class="flex flex-wrap gap-2 mt-6">
+        <span class="rounded-full px-3 py-1 text-sm bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300">
+          Datadog
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          Linux
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          Metrics
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          Alerting
+        </span>
+
+        <span class="rounded-full px-3 py-1 text-sm bg-zinc-100 dark:bg-zinc-800">
+          Incident Detection
+        </span>
+      </div>
+
+    </section>
+
+
+    <!-- PROJECT SUMMARY -->
+    <section class="grid md:grid-cols-3 gap-5 mb-16">
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+        <p class="text-sm text-zinc-500 mb-2">Project focus</p>
+        <h2 class="font-semibold text-lg">Infrastructure monitoring</h2>
+        <p class="text-sm text-zinc-500 mt-2">
+          System health and resource visibility.
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+        <p class="text-sm text-zinc-500 mb-2">Monitoring platform</p>
+        <h2 class="font-semibold text-lg">Datadog</h2>
+        <p class="text-sm text-zinc-500 mt-2">
+          Agent-based metric collection and dashboards.
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+        <p class="text-sm text-zinc-500 mb-2">Key capability</p>
+        <h2 class="font-semibold text-lg">Threshold-based alerting</h2>
+        <p class="text-sm text-zinc-500 mt-2">
+          Detecting configured conditions and notifying responders.
+        </p>
+      </div>
+
+    </section>
+
+
+    <!-- PROJECT OVERVIEW -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-5">
+        Project overview
+      </h2>
+
+      <div class="max-w-4xl space-y-4 leading-relaxed text-zinc-600 dark:text-zinc-400">
+
+        <p>
+          The goal was to monitor a virtual machine and make important system
+          metrics visible through Datadog. The Datadog Agent collects supported
+          host metrics and sends them to the monitoring platform for analysis
+          and visualization.
+        </p>
+
+        <p>
+          The monitoring setup focused on CPU utilization, network traffic,
+          and process-related metrics. Threshold-based monitors can help
+          identify conditions that require investigation before they develop
+          into more serious service issues.
+        </p>
+
+        <p>
+          The project also explored notification workflows and the importance
+          of testing both alert triggering and recovery behavior.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- ARCHITECTURE -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-3">
+        Architecture
+      </h2>
+
+      <p class="text-zinc-600 dark:text-zinc-400 mb-8 max-w-3xl">
+        This conceptual diagram illustrates how host metrics can flow from a
+        virtual machine through the Datadog Agent to the Datadog platform.
+        Notifications depend on the integrations configured in the actual
+        environment.
+      </p>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-950 p-6 md:p-8 overflow-x-auto">
+
+        <div class="flex flex-col items-center gap-3 min-w-[260px]">
+
+          <div class="architecture-card w-full max-w-sm">
+            <p class="text-orange-400 text-xs uppercase tracking-wider mb-2">
+              Source
+            </p>
+
+            <h3 class="font-bold text-lg">Virtual Machine</h3>
+
+            <p class="text-sm text-zinc-400 mt-2">
+              CPU · Network · Processes
+            </p>
+          </div>
+
+          <div class="architecture-arrow">↓</div>
+
+          <div class="architecture-card w-full max-w-sm">
+            <p class="text-orange-400 text-xs uppercase tracking-wider mb-2">
+              Collection
+            </p>
+
+            <h3 class="font-bold text-lg">Datadog Agent</h3>
+
+            <p class="text-sm text-zinc-400 mt-2">
+              Collects host metrics
+            </p>
+          </div>
+
+          <div class="architecture-arrow">↓</div>
+
+          <div class="architecture-card w-full max-w-sm border-orange-500">
+            <p class="text-orange-400 text-xs uppercase tracking-wider mb-2">
+              Monitoring
+            </p>
+
+            <h3 class="font-bold text-lg">Datadog Platform</h3>
+
+            <p class="text-sm text-zinc-400 mt-2">
+              Dashboards · Monitors · Alert evaluation
+            </p>
+          </div>
+
+          <div class="architecture-arrow">↓</div>
+
+          <div class="grid sm:grid-cols-2 gap-3 w-full max-w-lg">
+
+            <div class="architecture-card">
+              <h3 class="font-semibold">Email</h3>
+              <p class="text-sm text-zinc-400 mt-2">
+                Alert notifications, if configured
+              </p>
+            </div>
+
+            <div class="architecture-card">
+              <h3 class="font-semibold">Slack</h3>
+              <p class="text-sm text-zinc-400 mt-2">
+                Channel notifications, if configured
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- IMPLEMENTATION -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-6">
+        Implementation
+      </h2>
+
+      <div class="space-y-8">
+
+        <!-- STEP 1 -->
+        <div class="flex gap-4">
+
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            1
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Install and configure the Datadog Agent
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Set up the agent on the monitored virtual machine and verify
+              that the host reports data to Datadog. Confirm agent installation
+              and host connectivity before building monitors.
+            </p>
+          </div>
+
+        </div>
+
+
+        <!-- STEP 2 -->
+        <div class="flex gap-4">
+
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            2
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Build a metrics dashboard
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Organize relevant host metrics into a dashboard to make system
+              utilization easier to inspect.
+            </p>
+
+            <ul class="list-disc pl-5 mt-3 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+
+              <li>
+                <code>system.cpu.user</code> — user CPU utilization
+              </li>
+
+              <li>
+                <code>system.net.bytes_sent</code> — network bytes sent
+              </li>
+
+              <li>
+                <code>system.net.bytes_rcvd</code> — network bytes received
+              </li>
+
+              <li>
+                <code>process.stat.count</code> — process count, where supported
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+
+
+        <!-- STEP 3 -->
+        <div class="flex gap-4">
+
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            3
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Configure threshold-based monitors
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Define warning and critical thresholds appropriate for the
+              monitored system. For example, a CPU utilization monitor might
+              use warning and critical thresholds of 60% and 80%, respectively,
+              if those were the values used in the actual test.
+            </p>
+          </div>
+
+        </div>
+
+
+        <!-- STEP 4 -->
+        <div class="flex gap-4">
+
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center font-bold">
+            4
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">
+              Configure notifications
+            </h3>
+
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Connect the required notification destinations and verify that
+              alert messages reach the intended recipients. Document only
+              integrations that were successfully configured and tested.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- SCREENSHOTS AND EVIDENCE -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-3">
+        Screenshots and evidence
+      </h2>
+
+      <p class="text-zinc-600 dark:text-zinc-400 mb-8">
+        The following images provide visual evidence for the monitoring
+        project. Each image path corresponds to a file in the portfolio's
+        images folder.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <!-- IMAGE 1: DATADOG DASHBOARD -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/datadog-dashboard.png"
+            alt="Datadog host metrics dashboard"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+
+            <h3 class="font-semibold">
+              Host metrics dashboard
+            </h3>
+
+            <p class="text-sm text-zinc-500 mt-1">
+              Dashboard evidence for visualizing host metrics and resource
+              utilization.
+            </p>
+
+          </figcaption>
+
+        </figure>
+
+
+        <!-- IMAGE 2: DATADOG ALERT -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/datadog-alert.png"
+            alt="Datadog monitor or alert evidence"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+
+            <h3 class="font-semibold">
+              Monitor configuration or alert
+            </h3>
+
+            <p class="text-sm text-zinc-500 mt-1">
+              Visual evidence associated with monitoring thresholds or alert
+              evaluation.
+            </p>
+
+          </figcaption>
+
+        </figure>
+
+
+        <!-- IMAGE 3: VM MONITORING -->
+        <figure class="min-w-0">
+
+          <img
+            src="images/datadog-vm-monitoring.png"
+            alt="Virtual machine monitoring project"
+            class="evidence-image"
+            loading="lazy"
+          >
+
+          <figcaption class="mt-3">
+
+            <h3 class="font-semibold">
+              Virtual machine monitoring setup
+            </h3>
+
+            <p class="text-sm text-zinc-500 mt-1">
+              Additional visual evidence related to the VM monitoring
+              environment.
+            </p>
+
+          </figcaption>
+
+        </figure>
+
+      </div>
+
+    </section>
+
+
+    <!-- TESTING AND VALIDATION -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-5">
+        Testing and validation
+      </h2>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 md:p-8">
+
+        <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          The monitoring workflow can be validated by generating a controlled
+          increase in CPU usage, observing the metrics, checking whether the
+          configured monitor changes state, and verifying notification and
+          recovery behavior.
+        </p>
+
+        <div class="mt-6 p-4 rounded-xl bg-zinc-100 dark:bg-zinc-900">
+
+          <p class="font-semibold mb-2">
+            Example Linux CPU stress test
+          </p>
+
+          <pre class="text-sm overflow-x-auto"><code>stress --cpu 4 --timeout 120</code></pre>
+
+          <p class="text-sm text-zinc-500 mt-3">
+            Run this only on a machine you control and only if the stress
+            utility is installed. It creates CPU load for approximately two
+            minutes, but does not guarantee that an alert will trigger.
+          </p>
+
+        </div>
+
+        <p class="text-sm text-zinc-500 mt-5">
+          Report a test as successful only if you observed the expected
+          metrics, alert state, and notification. If a step was not tested,
+          describe it as a proposed validation rather than a completed result.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- CHALLENGES AND LESSONS -->
+    <section class="mb-16">
+
+      <h2 class="text-2xl font-bold text-zinc-950 dark:text-white mb-5">
+        Challenges and lessons learned
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-5">
+
+        <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+
+          <h3 class="font-semibold mb-3">
+            Challenges to consider
+          </h3>
+
+          <ul class="list-disc pl-5 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+
+            <li>
+              Verifying that the agent reports the expected metrics.
+            </li>
+
+            <li>
+              Selecting useful thresholds without generating excessive noise.
+            </li>
+
+            <li>
+              Confirming notification delivery and alert recovery.
+            </li>
+
+          </ul>
+
+        </div>
+
+
+        <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+
+          <h3 class="font-semibold mb-3">
+            Key learning areas
+          </h3>
+
+          <ul class="list-disc pl-5 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+
+            <li>
+              Host-level observability and metric visualization.
+            </li>
+
+            <li>
+              Threshold-based monitoring and incident detection.
+            </li>
+
+            <li>
+              Validating alert behavior instead of relying on configuration alone.
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER NAVIGATION -->
+    <section class="border-t border-zinc-200 dark:border-zinc-800 pt-8 flex flex-wrap justify-between gap-4">
+
+      <a href="projects.html"
+         class="text-orange-500 hover:underline">
+        ← All projects
+      </a>
+
+      <a href="aws-auto-scaling.html"
+         class="text-orange-500 hover:underline">
+        Next case study: AWS Auto Scaling →
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="border-t border-zinc-200 dark:border-zinc-800 mt-12">
+
+    <div class="max-w-6xl mx-auto px-6 py-6 text-sm text-zinc-500">
+      © 2026 Portfolio. Built to document practical technical learning.
+    </div>
+
+  </footer>
+
+
+  <!-- THEME TOGGLE -->
+  <script>
+    const themeButton = document.getElementById('theme-toggle');
+
+    themeButton.addEventListener('click', () => {
+      const isDark =
+        document.documentElement.classList.toggle('dark');
+
+      try {
+        localStorage.setItem(
+          'theme',
+          isDark ? 'dark' : 'light'
+        );
+      } catch (error) {
+        // The theme still changes for the current page.
+      }
+    });
+  </script>
+
+</body>
+</html>

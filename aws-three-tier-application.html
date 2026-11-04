@@ -1,0 +1,875 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Building a Production-Ready 3-Tier Application on AWS | Florence</title>
+
+  <meta name="description" content="My hands-on journey deploying a three-tier Book Review application on AWS using Terraform, Next.js, Node.js, EC2, load balancers, and RDS.">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            accent: '#ff642d'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Inter, sans-serif; }
+
+    .article-content h2 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-top: 2.8rem;
+      margin-bottom: 1rem;
+      color: inherit;
+    }
+
+    .article-content h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-top: 1.8rem;
+      margin-bottom: .75rem;
+      color: inherit;
+    }
+
+    .article-content p {
+      line-height: 1.9;
+      margin-bottom: 1.2rem;
+    }
+
+    .article-content ul,
+    .article-content ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .article-content ul { list-style: disc; }
+    .article-content ol { list-style: decimal; }
+
+    .article-content li {
+      line-height: 1.8;
+      margin-bottom: .6rem;
+    }
+
+    .article-content pre {
+      overflow-x: auto;
+      background: #18181b;
+      color: #f4f4f5;
+      padding: 1.2rem;
+      border-radius: .8rem;
+      margin: 1.25rem 0 1.5rem;
+      font-size: .85rem;
+      line-height: 1.75;
+    }
+
+    .article-content code {
+      font-family: Consolas, monospace;
+    }
+
+    .article-content a {
+      color: #ff642d;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .article-content strong { font-weight: 700; }
+
+    html.dark body {
+      background: #09090b;
+      color: #f4f4f5;
+    }
+  </style>
+</head>
+
+<body class="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+
+  <!-- NAVIGATION -->
+  <header class="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur">
+    <nav class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <a href="index.html" class="text-xl font-extrabold tracking-tight">
+        Florence<span class="text-accent">.</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-6 text-sm text-zinc-600 dark:text-zinc-300">
+        <a href="index.html#services" class="hover:text-accent">Services</a>
+        <a href="index.html#work" class="hover:text-accent">Work</a>
+        <a href="index.html#about" class="hover:text-accent">About</a>
+        <a href="blog.html" class="hover:text-accent">Blog</a>
+      </div>
+
+      <a href="blog.html" class="rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">
+        Back to blog →
+      </a>
+    </nav>
+  </header>
+
+
+  <main class="max-w-4xl mx-auto px-5 py-10 md:py-16">
+
+    <a href="blog.html" class="text-sm text-zinc-500 hover:text-accent">
+      ← Back to all articles
+    </a>
+
+    <!-- ARTICLE INTRODUCTION -->
+    <div class="mt-8 flex flex-wrap items-center gap-3 text-sm">
+      <span class="rounded-full border border-orange-200 dark:border-zinc-700 px-3 py-1 text-orange-500">
+        AWS & DevOps
+      </span>
+      <span class="text-zinc-500">March 23, 2026</span>
+      <span class="text-zinc-500">14 min read</span>
+    </div>
+
+    <h1 class="mt-6 text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
+      Building a Production-Ready 3-Tier Application on AWS: A Complete Infrastructure Journey
+    </h1>
+
+    <p class="mt-6 text-lg md:text-xl leading-relaxed text-zinc-600 dark:text-zinc-400">
+      How I deployed a highly available Book Review application using Terraform, Next.js, and AWS, and what I learned debugging every layer of the stack.
+    </p>
+
+    <div class="mt-7 flex items-center gap-3">
+      <div class="h-11 w-11 rounded-full bg-orange-100 dark:bg-zinc-800 flex items-center justify-center text-orange-600 font-extrabold">
+        F
+      </div>
+      <div>
+        <p class="font-semibold">Florence</p>
+        <p class="text-sm text-zinc-500">Cloud Engineering · AWS · DevOps</p>
+      </div>
+    </div>
+
+    <!-- BANNER: uses an existing image in your images folder -->
+    <figure class="mt-10 mb-12">
+      <img
+        src="images/aws-subnets.png"
+        alt="AWS network architecture and subnet design"
+        class="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800"
+      >
+      <figcaption class="mt-3 text-sm text-zinc-500">
+        AWS infrastructure evidence from my cloud engineering project.
+      </figcaption>
+    </figure>
+
+
+    <!-- ARTICLE CONTENT -->
+    <article class="article-content text-zinc-700 dark:text-zinc-300">
+
+      <section>
+        <h2>Introduction</h2>
+
+        <p>
+          “It should just work,” I thought, as I typed
+          <code>terraform apply</code> for what I believed would be the
+          final time. Fifteen hours and countless SSH sessions later,
+          I finally understood the difference between making something
+          work and making something production-ready.
+        </p>
+
+        <p>
+          This is the story of deploying a three-tier web application
+          on AWS using Infrastructure as Code. The journey took me
+          through VPC networking, load balancers, database connectivity,
+          and the surprising complexity of configuring Next.js
+          environment variables for production.
+        </p>
+
+        <p>In this article, I cover:</p>
+
+        <ul>
+          <li>Designing a three-tier architecture on AWS.</li>
+          <li>Provisioning infrastructure with Terraform.</li>
+          <li>Configuring EC2 instances, load balancers, and Amazon RDS.</li>
+          <li>Debugging application, networking, and database problems.</li>
+          <li>Applying lessons about security, availability, and cost.</li>
+        </ul>
+      </section>
+
+
+      <section>
+        <h2>1. High-level architecture overview</h2>
+
+        <p>
+          The application follows a three-tier architecture. Each tier
+          has a distinct responsibility, allowing the web interface,
+          backend services, and database to be managed and secured
+          separately.
+        </p>
+
+        <div class="my-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 md:p-7 bg-zinc-50 dark:bg-zinc-900">
+          <div class="text-center font-bold p-4 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+            Internet Users
+          </div>
+
+          <div class="text-center text-orange-500 text-2xl py-2">↓</div>
+
+          <div class="text-center p-4 rounded-lg bg-orange-50 dark:bg-zinc-800 border border-orange-200 dark:border-zinc-700">
+            <strong>Public Application Load Balancer</strong>
+            <p class="text-sm mt-1">Receives incoming web traffic</p>
+          </div>
+
+          <div class="text-center text-orange-500 text-2xl py-2">↓</div>
+
+          <div class="p-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-center">
+            <strong>Web Tier · Public Subnets</strong>
+            <p class="text-sm mt-2">EC2 · Next.js · Nginx · PM2</p>
+            <p class="text-sm">Deployed across two Availability Zones</p>
+          </div>
+
+          <div class="text-center text-orange-500 text-2xl py-2">↓</div>
+
+          <div class="text-center p-4 rounded-lg bg-orange-50 dark:bg-zinc-800 border border-orange-200 dark:border-zinc-700">
+            <strong>Internal Application Load Balancer</strong>
+            <p class="text-sm mt-1">Routes requests to backend services</p>
+          </div>
+
+          <div class="text-center text-orange-500 text-2xl py-2">↓</div>
+
+          <div class="p-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-center">
+            <strong>Application Tier · Private Subnets</strong>
+            <p class="text-sm mt-2">EC2 · Node.js · Express · PM2</p>
+            <p class="text-sm">Backend REST API</p>
+          </div>
+
+          <div class="text-center text-orange-500 text-2xl py-2">↓</div>
+
+          <div class="p-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-center">
+            <strong>Database Tier · Private Subnets</strong>
+            <p class="text-sm mt-2">Amazon RDS for MySQL</p>
+            <p class="text-sm">Persistent application data</p>
+          </div>
+        </div>
+
+        <p>
+          The original design used multiple Availability Zones to
+          support resilience. The web and application tiers use load
+          balancers to distribute requests, while the database tier
+          provides persistent storage.
+        </p>
+
+        <p>
+          The diagram represents the intended architecture. Actual
+          availability and failover behavior depend on the deployed
+          configuration and successful testing.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>2. Why use a three-tier architecture?</h2>
+
+        <h3>Separation of concerns</h3>
+
+        <ul>
+          <li><strong>Presentation tier:</strong> Displays the user interface.</li>
+          <li><strong>Application tier:</strong> Processes requests and implements business logic.</li>
+          <li><strong>Database tier:</strong> Stores and retrieves application data.</li>
+        </ul>
+
+        <p>
+          This separation makes it possible to scale components
+          independently, apply different security policies, and
+          troubleshoot problems within a specific layer.
+        </p>
+
+        <h3>Security through isolation</h3>
+
+        <p>
+          The web tier receives external traffic through the public
+          load balancer. The application tier is placed in private
+          subnets, and the database is not publicly accessible.
+          Security groups restrict communication between tiers.
+        </p>
+
+        <p>
+          Each tier should accept only the traffic it needs. For
+          example, the database should accept MySQL connections from
+          the authorized application tier rather than from the
+          entire internet.
+        </p>
+
+        <h3>Scalability and performance</h3>
+
+        <p>
+          Load balancing helps distribute requests between healthy
+          targets. Additional capacity can be introduced when needed,
+          while the frontend and backend can be scaled according to
+          their individual requirements.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>3. Infrastructure design with Terraform</h2>
+
+        <p>
+          Manually creating cloud resources through a console can
+          become difficult to reproduce and maintain. Infrastructure
+          as Code allows resource definitions to be stored, reviewed,
+          version-controlled, and reused.
+        </p>
+
+        <p>
+          My Terraform project organized infrastructure configuration
+          into files for resources, variables, outputs, and instance
+          initialization scripts.
+        </p>
+
+        <pre><code>book-review-terraform/
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── userdata/
+│   ├── frontend.sh
+│   └── backend.sh
+└── README.md</code></pre>
+
+        <h3>My Terraform workflow</h3>
+
+        <pre><code># Initialize providers and modules
+terraform init
+
+# Review the proposed infrastructure changes
+terraform plan
+
+# Apply changes after reviewing the plan
+terraform apply</code></pre>
+
+        <p>
+          The plan is an important review step. It helps identify
+          proposed additions, modifications, and deletions before
+          they affect the environment.
+        </p>
+
+        <h3>Network foundation</h3>
+
+        <p>
+          The network design used a custom VPC with public subnets
+          for the web tier and private subnets for application and
+          database resources. An Internet Gateway supports internet
+          connectivity for public resources, while a NAT Gateway can
+          provide outbound internet access to private resources when
+          required.
+        </p>
+
+        <pre><code>resource "aws_vpc" "main" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+}
+
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+}</code></pre>
+
+        <p>
+          Subnet ranges, routes, and security rules must be consistent
+          with the actual deployment. NAT Gateways and multi-AZ
+          resources also have cost implications.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>4. Security groups and traffic flow</h2>
+
+        <p>
+          AWS security groups act as stateful virtual firewalls.
+          The goal is to permit only the necessary connections
+          between components.
+        </p>
+
+        <ul>
+          <li>The public load balancer accepts permitted web traffic.</li>
+          <li>The web tier accepts requests from its authorized load balancer.</li>
+          <li>The application tier accepts API traffic from the internal load balancer.</li>
+          <li>The database accepts MySQL connections from the authorized application tier.</li>
+        </ul>
+
+        <pre><code># Illustrative example: restrict database access
+# to the application security group.
+
+resource "aws_security_group" "db_tier" {
+  name   = "book-review-db-tier"
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.app_tier.id]
+  }
+}</code></pre>
+
+        <p>
+          This is an illustrative excerpt, not a complete,
+          independently deployable Terraform configuration.
+          Resource references must match the actual project files.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>5. Configuring EC2 and application startup</h2>
+
+        <p>
+          EC2 user data scripts can automate instance initialization.
+          In this project, the intended workflow included installing
+          application dependencies, obtaining the application code,
+          building the frontend, configuring Nginx, and starting
+          processes with PM2.
+        </p>
+
+        <p>
+          Automating these steps makes instance creation more
+          repeatable. However, a successful EC2 launch does not
+          necessarily mean the application has finished installing
+          or is ready to receive traffic.
+        </p>
+
+        <h3>Why the Nginx default page appeared</h3>
+
+        <p>
+          One early lesson was that infrastructure provisioning
+          and application deployment are separate stages. The load
+          balancer could exist while the application setup was still
+          running or had not completed successfully.
+        </p>
+
+        <p>
+          Checking user data logs, Nginx configuration, application
+          process status, and target health helps determine where
+          the problem lies.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>6. Debugging the deployment: what went wrong?</h2>
+
+        <h3>Problem 1: The frontend used localhost</h3>
+
+        <p>
+          The frontend attempted to send API requests to
+          <code>localhost:3001</code>. In a user's browser, localhost
+          refers to the user's own device, not the remote backend
+          EC2 instance.
+        </p>
+
+        <p>
+          The production frontend needed to use the intended API
+          path so that Nginx could forward requests through the
+          internal load balancer.
+        </p>
+
+        <h3>Problem 2: Next.js environment variables</h3>
+
+        <p>
+          Public Next.js environment variables prefixed with
+          <code>NEXT_PUBLIC_</code> are generally embedded into
+          browser-side code during the build. Changing the server
+          environment after the build does not automatically change
+          those values in already-built JavaScript.
+        </p>
+
+        <pre><code># Example: set the public API path before building
+export NEXT_PUBLIC_API_URL="/api"
+
+npm run build</code></pre>
+
+        <p>
+          The correct value also depends on how the application
+          constructs its API request paths. The base URL and
+          request path must be checked together to avoid duplicate
+          segments such as <code>/api/api/books</code>.
+        </p>
+
+        <h3>Problem 3: The API path was duplicated</h3>
+
+        <p>
+          The frontend was combining a base URL containing
+          <code>/api</code> with a request path that already
+          included <code>/api</code>. This created an incorrect
+          endpoint.
+        </p>
+
+        <p>
+          The solution was to align the frontend's base URL with
+          the request paths and the Nginx proxy configuration.
+          After a configuration change, the application needed
+          to be rebuilt and tested again.
+        </p>
+
+        <h3>Problem 4: Browser caching showed the old code</h3>
+
+        <p>
+          Even after correcting the server-side configuration,
+          the browser continued showing an old error. A hard
+          refresh or a clean Incognito session helped distinguish
+          stale browser content from the current deployment.
+        </p>
+
+        <pre><code># In Chrome or another Chromium browser:
+# Ctrl + Shift + R for a hard refresh</code></pre>
+
+        <p>
+          Browser caching was a useful troubleshooting lead, but
+          it is important to verify the actual network request
+          and loaded JavaScript before concluding that caching
+          is the cause.
+        </p>
+
+        <h3>Problem 5: The backend could not connect to MySQL</h3>
+
+        <p>
+          The backend encountered a database connection timeout.
+          The database hostname had been configured with the port
+          appended to it, even though the database client expected
+          the hostname and port to be supplied separately.
+        </p>
+
+        <pre><code># Illustrative environment configuration
+DB_HOST=your-rds-endpoint
+DB_PORT=3306
+DB_NAME=your_database
+DB_USER=your_database_user</code></pre>
+
+        <p>
+          The actual database password should be supplied securely
+          and must never be published in this file. In a production
+          environment, use a suitable secrets-management approach
+          rather than committing credentials to source control.
+        </p>
+
+        <p>
+          I learned to verify the database endpoint, port,
+          security-group rules, network reachability, and backend
+          logs together rather than assuming the database itself
+          was the problem.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>7. A layer-by-layer troubleshooting approach</h2>
+
+        <p>
+          Distributed applications are easier to debug when the
+          request path is checked one component at a time.
+        </p>
+
+        <pre><code>Browser
+  |
+  | Check browser DevTools and request URL
+  v
+Public Application Load Balancer
+  |
+  | Check listener rules and target health
+  v
+Web EC2 Instance
+  |
+  | Check Nginx logs and frontend process
+  v
+Internal Application Load Balancer
+  |
+  | Check routing and target health
+  v
+Application EC2 Instance
+  |
+  | Check API logs and configuration
+  v
+Amazon RDS
+    Check connectivity and database errors</code></pre>
+
+        <h3>Useful diagnostic checks</h3>
+
+        <ul>
+          <li>Inspect browser DevTools and the Network tab.</li>
+          <li>Check the load balancer's target health.</li>
+          <li>Inspect Nginx access and error logs.</li>
+          <li>Review application process status and logs.</li>
+          <li>Verify API URLs and environment configuration.</li>
+          <li>Test connectivity to the database endpoint and port.</li>
+        </ul>
+
+        <p>
+          The key lesson is to isolate the failing layer, verify
+          the evidence, make one focused change, and test again.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>8. Production-readiness lessons</h2>
+
+        <h3>Infrastructure as Code</h3>
+
+        <p>
+          Terraform makes infrastructure definitions reviewable
+          and repeatable. It does not remove the need to review
+          plans, manage state securely, protect data, or test
+          recovery procedures.
+        </p>
+
+        <h3>Immutable infrastructure</h3>
+
+        <p>
+          Manually changing a running server can create differences
+          between the deployed environment and its source
+          configuration. Where practical, make the fix in the
+          code or initialization process and replace the affected
+          resource through a controlled deployment.
+        </p>
+
+        <h3>Health checks</h3>
+
+        <p>
+          Load balancer health checks help identify targets that
+          should not receive traffic. Their paths, timing, and
+          success criteria need to reflect the application.
+          A healthy web process alone may not prove that all
+          downstream dependencies are working.
+        </p>
+
+        <h3>Multi-AZ architecture</h3>
+
+        <p>
+          Distributing resources across Availability Zones can
+          reduce the impact of some infrastructure failures.
+          Actual failover depends on the configuration of the
+          load balancers, compute resources, database, and
+          recovery processes.
+        </p>
+
+        <h3>Secrets management</h3>
+
+        <p>
+          Database passwords and access credentials should not
+          be hard-coded in application files or exposed in
+          public repositories. Use protected configuration and
+          an appropriate secrets-management service for the
+          environment.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>9. Cost optimization considerations</h2>
+
+        <p>
+          A highly available architecture can cost more than a
+          small development environment. Resources such as NAT
+          Gateways, load balancers, multi-AZ database deployments,
+          and multiple compute instances can contribute to the
+          overall bill.
+        </p>
+
+        <p>For development and testing, consider:</p>
+
+        <ul>
+          <li>Removing resources that are no longer needed.</li>
+          <li>Choosing appropriately sized instances.</li>
+          <li>Reviewing NAT Gateway and load balancer costs.</li>
+          <li>Using a simpler topology when high availability is not required.</li>
+          <li>Monitoring actual AWS billing and usage rather than relying only on estimates.</li>
+        </ul>
+
+        <p>
+          Any change that reduces availability or resilience should
+          be evaluated against the application's requirements.
+          Development cost savings are not automatically suitable
+          for a production workload.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>10. What I learned from this project</h2>
+
+        <h3>Technical lessons</h3>
+
+        <ol>
+          <li>
+            <strong>Understand build-time configuration.</strong>
+            Frontend environment variables may be embedded in
+            the build output.
+          </li>
+          <li>
+            <strong>Check the complete request path.</strong>
+            Incorrect routing can make a working backend appear
+            unavailable.
+          </li>
+          <li>
+            <strong>Use logs as evidence.</strong>
+            Browser errors, load balancer health, Nginx logs,
+            application logs, and database errors each provide
+            different clues.
+          </li>
+          <li>
+            <strong>Validate network connectivity.</strong>
+            Private subnet routing and security groups can
+            prevent connections even when services are running.
+          </li>
+          <li>
+            <strong>Automate repeatable configuration.</strong>
+            Infrastructure and startup changes should be
+            captured in the appropriate code and configuration.
+          </li>
+        </ol>
+
+        <h3>Process lessons</h3>
+
+        <ol>
+          <li>Start with a small working deployment before adding complexity.</li>
+          <li>Document errors, fixes, and important design decisions.</li>
+          <li>Protect Terraform state and use an appropriate remote backend where required.</li>
+          <li>Test individual tiers before testing the full application.</li>
+          <li>Avoid manual changes that cannot be reproduced from the project configuration.</li>
+        </ol>
+      </section>
+
+
+      <section>
+        <h2>11. What could be improved next?</h2>
+
+        <p>
+          The architecture provides a foundation for further
+          improvements. These are potential next steps and should
+          not be interpreted as features already deployed.
+        </p>
+
+        <ul>
+          <li><strong>HTTPS:</strong> Configure and validate trusted TLS certificates.</li>
+          <li><strong>Auto Scaling:</strong> Define scaling policies based on workload and capacity needs.</li>
+          <li><strong>Monitoring:</strong> Add alarms for unhealthy targets and important application metrics.</li>
+          <li><strong>Secrets Manager:</strong> Store and retrieve sensitive credentials securely.</li>
+          <li><strong>CI/CD:</strong> Automate tested build and deployment steps.</li>
+          <li><strong>CloudFront:</strong> Evaluate content delivery and caching where appropriate.</li>
+          <li><strong>Database resilience:</strong> Review backups, recovery procedures, and read-replica requirements.</li>
+        </ul>
+
+        <p>
+          Each enhancement should be implemented, validated, and
+          documented according to the needs of the application.
+        </p>
+      </section>
+
+
+      <section>
+        <h2>Conclusion</h2>
+
+        <p>
+          Building this three-tier application taught me that
+          the gap between “it works on my laptop” and “it works
+          reliably in the cloud” is filled with networking,
+          security, configuration, performance, cost, and
+          operational considerations.
+        </p>
+
+        <p>
+          The most valuable lesson was learning to troubleshoot
+          methodically. A problem that first appears to be an
+          application bug may turn out to be a routing issue,
+          an environment variable, a stale browser asset, or a
+          database connection setting.
+        </p>
+
+        <p>
+          Terraform and other cloud tools help make deployments
+          more repeatable, but reliable results still require
+          careful design, verification, and documentation.
+        </p>
+
+        <p>
+          This project strengthened my interest in cloud
+          engineering, Infrastructure as Code, and DevOps.
+          I look forward to building on these skills through
+          more hands-on projects.
+        </p>
+      </section>
+
+
+      <!-- MEDIUM ARTICLE LINK -->
+      <section class="mt-12 rounded-2xl border border-orange-200 dark:border-zinc-800 bg-orange-50/70 dark:bg-zinc-900 p-6 md:p-8">
+        <h2 class="!mt-0">Read the original article on Medium</h2>
+
+        <p>
+          This portfolio page presents a web-friendly version
+          of my project story. Visit Medium for the original
+          published article.
+        </p>
+
+        <a
+          href="https://medium.com/@obianujuflorence02/building-a-production-ready-3-tier-application-on-aws-a-complete-infrastructure-journey-5bee716a5b3b"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-full bg-orange-500 text-white px-5 py-3 text-sm font-semibold no-underline hover:bg-orange-600"
+        >
+          Read on Medium ↗
+        </a>
+      </section>
+
+    </article>
+
+
+    <!-- FOOTER NAVIGATION -->
+    <div class="mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800 flex flex-wrap justify-between gap-4">
+      <a href="blog.html" class="text-sm font-semibold hover:text-accent">
+        ← Back to blog
+      </a>
+
+      <a href="index.html#work" class="text-sm font-semibold hover:text-accent">
+        Explore my projects →
+      </a>
+    </div>
+
+  </main>
+
+
+  <footer class="border-t border-zinc-200 dark:border-zinc-800">
+    <div class="max-w-6xl mx-auto px-5 py-7 flex flex-wrap justify-between gap-3 text-sm text-zinc-500">
+      <p>© <span id="current-year"></span> Florence. All rights reserved.</p>
+      <a href="index.html" class="hover:text-accent">Back to portfolio ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('current-year').textContent =
+      new Date().getFullYear();
+
+    // Optional dark mode toggle if a button with id="theme-toggle" is added.
+    const themeToggle = document.getElementById('theme-toggle');
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem(
+          'portfolio-theme',
+          document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+        );
+      });
+    }
+
+    if (localStorage.getItem('portfolio-theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+
+</body>
+</html>
